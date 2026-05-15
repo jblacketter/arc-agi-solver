@@ -27,6 +27,9 @@ data/
 environment_files/
 recordings/
 
+# Eval result directories (per-run reports; headline numbers go to docs/decision_log.md)
+results/
+
 # tagteam workflow runtime state (local to each machine / per-cycle)
 .tagteam/
 .handoff-session.json

@@ -41,6 +41,30 @@ docs/
 
 The `data/` directory is created by `just fetch-data` and is gitignored.
 
+## Running the AGI-2 baseline
+
+Phase 2 ships a Claude-based baseline agent and a scoring harness. Offline checks (`just check`) don't touch the Anthropic API. To actually run the baseline you need `ANTHROPIC_API_KEY` set.
+
+```bash
+# 3-task live smoke (~$0.20 on Opus 4.7).
+just eval-smoke
+
+# Recorded baseline on 30 evaluation tasks (default --limit 30, ~$5-7 on Opus 4.7).
+just eval
+
+# Override flags by passing them through (max-cost ceiling, model, etc).
+just eval --limit 10 --max-cost-usd 3
+just eval --all --max-cost-usd 30      # full 120-task eval
+just eval --model claude-sonnet-4-6     # cheaper alternative
+```
+
+Each run writes a directory under `results/agi2/<timestamp>_<agent>_<split>_<n>/`:
+- `summary.json` — score, token counts, cache-hit ratio, cost
+- `per_task.json` — per-task and per-test-input breakdown
+- `raw_responses.jsonl` — per-API-call usage records
+
+`--max-cost-usd` is a hard ceiling: if cumulative spend exceeds it mid-run, the runner aborts cleanly and writes a partial `summary.json` with `status: "aborted_cost_ceiling"`. **`just eval-smoke` and `just eval` cost real money.**
+
 ## Environment variables
 
 Copy `.env.example` to `.env` and fill in as needed:

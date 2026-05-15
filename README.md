@@ -7,7 +7,7 @@ See `docs/roadmap.md` for the full phase plan and `docs/phases/foundations.md` f
 ## Requirements
 
 - macOS or Linux
-- Python 3.11 (managed via `.python-version`)
+- Python 3.12 (managed via `.python-version`)
 - [`uv`](https://docs.astral.sh/uv/) — install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - [`just`](https://github.com/casey/just) — `brew install just` or `cargo install just`
 - `git`

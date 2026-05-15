@@ -6,9 +6,16 @@ This survey backs the ADR in `docs/decision_log.md`. It is deliberately not exha
 
 ## Headline context
 
-- **ARC-AGI-2 is materially harder than ARC-AGI-1.** Per the ARC Prize team's launch material, "none of the leading AI models have surpassed a 5% success rate on ARC-AGI-2 tasks, whereas comparable models routinely achieve between 20% and 50% on ARC-AGI-1." The benchmark targets symbolic interpretation, compositional reasoning, and context-dependent rule application — properties that DSL-brute-force was known to exploit in AGI-1 and that AGI-2 deliberately reduces. (Source: https://arcprize.org/blog/arc-agi-2-technical-report; arXiv 2505.11831.)
+- **ARC-AGI-2 is materially harder than ARC-AGI-1.** At AGI-2 launch the ARC Prize team reported "none of the leading AI models have surpassed a 5% success rate on ARC-AGI-2 tasks, whereas comparable models routinely achieve between 20% and 50% on ARC-AGI-1." The benchmark targets symbolic interpretation, compositional reasoning, and context-dependent rule application — properties that DSL-brute-force was known to exploit in AGI-1 and that AGI-2 deliberately reduces. (Source: https://arcprize.org/blog/arc-agi-2-technical-report; arXiv 2505.11831.)
+- **ARC Prize 2025 has been run; results are public and reproducible** (https://arcprize.org/competitions/2025). Top ARC-AGI-2 private-eval scores at the time of this survey:
+  - **NVARC — 24.0%** — synthetic-data-driven ensemble of an improved Architects-style test-time-trained model + TRM-based components. ([Code](https://www.kaggle.com/code/gregkamradt/arc2-qwen3-unsloth-flash-lora-batch8-queue-trm2/edit?fromFork=1) / paper linked from the competition page.)
+  - **the ARChitects — 16.5%** — 2D-aware masked-diffusion LLM with recursive self-refinement and perspective-based scoring. ([Code](https://www.kaggle.com/code/gregkamradt/arc-2025-diffusion/edit?fromFork=1) / [paper](https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/).)
+  - **MindsAI — 12.6%** — engineered test-time-training pipeline combining TTFT + augmentation ensembles + tokenizer dropout. ([Code](https://www.kaggle.com/code/gregkamradt/mindsai-tufa-2025-v4/edit?fromFork=1) / [paper](https://arxiv.org/abs/2506.14276).)
+  - **Lonnie — 6.7%**, **Barbadillo — 6.5%**.
+  - **All winners ran at $0.20 USD per task** within Kaggle's compute envelope. Grand prize (85% threshold) **remains unclaimed**.
+  - **Implication:** the "leading models <5% on AGI-2" framing was launch-day; the 2025 leaderboard has moved that ceiling to ~24%. **The two top families are test-time training and custom-architecture LMs (diffusion / 2D-aware masking), not pure LLM transduction and not LLM+Python codegen.**
 - **ARC Prize 2026 has a $2M purse across 3 tracks.** Kaggle hosts the active competitions (ARC-AGI-2, ARC-AGI-3). The leaderboard shows "only systems which required less than $10,000 to run" — compute-unbounded approaches like OpenAI's o3 demonstration (75.7% / 87.5% on AGI-1 semi-private/public eval) are excluded from prize eligibility but useful as ceilings. (Source: https://arcprize.org/leaderboard, https://arcprize.org/blog/oai-o3-pub-breakthrough.)
-- **Open-source/published winning scores on ARC-AGI-1 (private eval) sit around 50%.** Best published scores on ARC-AGI-2 are in low single digits at survey time.
+- **Open-source/published winning scores on ARC-AGI-1 (private eval) sit around 50%; the 2025 winners on ARC-AGI-2 private eval sit at 6-24%.**
 
 ---
 
@@ -79,28 +86,30 @@ This survey backs the ADR in `docs/decision_log.md`. It is deliberately not exha
 
 ---
 
-## 4. Test-time training / fine-tuning (Akyurek et al; Barbadillo Kaggle 2024)
+## 4. Test-time training / fine-tuning (Akyurek et al; 2024 Barbadillo; **2025 NVARC / ARChitects / MindsAI**)
 
-**What:** At inference time, take the task's training pairs, expand them with augmentations (rotations / reflections / color permutations), and run a few gradient steps to fine-tune a small base LM on this expanded data. Then sample from the fine-tuned model for the test input. (Source: https://arxiv.org/abs/2411.07279 "The Surprising Effectiveness of Test-Time Training for Abstract Reasoning"; Barbadillo 2024 Kaggle solution https://github.com/ironbar/arc24.)
+**What:** At inference time, take the task's training pairs, expand them with augmentations (rotations / reflections / color permutations), and run a few gradient steps to fine-tune a small base LM on this expanded data. Then sample from the fine-tuned model for the test input. Variants differ on the base model, augmentation strategy, ensembling, and how/whether they precompute synthetic training data.
 
-**Implementation specifics:**
-- Base model: 8B-parameter LM (Akyurek et al). LoRA-style updates per task.
-- Augmentation: rotation/reflection/color permutation expansion of the few training pairs.
-- Inference: fine-tune for N steps on the per-task augmented set, then sample completions.
+**Implementation specifics across published variants:**
+- Akyurek et al (paper, 2024): 8B-parameter LM, LoRA-style per-task updates, rotation/reflection/color-permutation augmentation. (Source: https://arxiv.org/abs/2411.07279.)
+- Barbadillo Kaggle 2024: TTT on AGI-1; 40% private eval. (Source: https://github.com/ironbar/arc24.)
+- **NVARC (2025 1st place, 24.0% AGI-2)**: synthetic-data-driven ensemble of an improved ARChitects-style TTT model with TRM (Transformer Reasoning Module) components. Built on Qwen3 + Unsloth + LoRA. (Source: https://arcprize.org/competitions/2025; Kaggle notebook linked.)
+- **MindsAI (2025 3rd place, 12.6% AGI-2)**: "engineered test-time-training pipeline combining TTFT, augmentation ensembles, and tokenizer dropout." (Paper: https://arxiv.org/abs/2506.14276.)
 
 **Reported performance:**
-- ARC-AGI-1 public validation: 53.0% with the 8B LM + TTT alone; 61.9% when ensembled with program-synthesis methods, matching "average human performance."
-- ARC Prize 2024 (private eval): Barbadillo's TTT-based solution placed 2nd at 40%.
-- ARC-AGI-2: not reported in the surveyed sources.
+- ARC-AGI-1 public validation: 53.0% with the 8B LM + TTT alone (Akyurek); 61.9% when ensembled with program-synthesis methods (Akyurek).
+- ARC-AGI-1 private eval (Kaggle 2024): Barbadillo 40% (2nd place).
+- **ARC-AGI-2 private eval (Kaggle 2025): NVARC 24.0%, MindsAI 12.6%, Barbadillo 6.5%.** All ran at $0.20/task within the $10k compute envelope.
 
-**Cost / compute:** GPU-heavy. Fine-tuning even a small LM per task takes minutes of GPU time × N tasks. Inference dollars are low (no API), but capex for GPUs is non-zero. The published Kaggle solutions all run within the $10k compute envelope.
+**Cost / compute:** GPU-heavy at training/fine-tune time. The 2025 winners all ran within the Kaggle competition compute envelope (free Kaggle GPU notebooks during the competition window; ~$0.20/task billed by the leaderboard). Reproducing them outside Kaggle requires cloud GPU access (Modal / Replicate / RunPod / local hardware) at real $.
 
 **Tradeoffs:**
-- ✅ Highest published open-source-friendly score on ARC-AGI-1.
-- ✅ Prize-eligible (within $10k compute).
-- ❌ Requires GPU infrastructure we don't have wired up. Phase 1's stack is Python + uv + an Anthropic API key — no model training pipeline, no GPU access.
-- ❌ Material implementation effort: dataset augmentation, LoRA setup, per-task fine-tune loop, model serving.
-- ❌ The "matches average human performance" claim is on ARC-AGI-1, not AGI-2.
+- ✅ **Currently the dominant family on the AGI-2 leaderboard.** Highest published scores are all in this family.
+- ✅ Prize-eligible (all winning solutions are <$10k compute).
+- ✅ Open-source reproducible — NVARC's Qwen3+LoRA+TRM notebook is public.
+- ❌ Requires GPU infrastructure we don't have wired up. Our Phase 1 stack is Python + uv + an Anthropic API key — no model training pipeline, no GPU access.
+- ❌ Material implementation effort: dataset augmentation, LoRA setup, per-task fine-tune loop, model serving, possibly synthetic-data generation (NVARC's edge).
+- ⚠️ Reproducing NVARC end-to-end is a multi-week effort even with the open notebook as a starting point.
 
 ---
 
@@ -141,9 +150,10 @@ This survey backs the ADR in `docs/decision_log.md`. It is deliberately not exha
 
 ## Cross-cutting observations
 
-- **The 2024 Kaggle winners' family was diverse:** ARChitects (LLM perspective methods, 53.5%), Barbadillo (TTT, 40%), and several induction-based teams. No single family dominated; the winning teams mixed techniques.
-- **Code execution is a force multiplier.** Every approach with measurable >40% score on AGI-1 either runs LLM-generated code or runs a hand-built program (DSL search). Pure transduction without code execution caps out around 5-30%.
-- **AGI-2 is essentially open.** No surveyed approach has reported a meaningful AGI-2 number (the 5% ceiling for frontier models is the public reference point). Phase 4's job is partly to *generate* that number for whatever family we pick.
+- **2025 results updated the picture significantly over 2024:** every top-5 AGI-2 winner is in the test-time-training / custom-LM family. LLM+Python codegen (Greenblatt-style) did not appear in the 2025 top-5; whether that is because it was tried and lost or because no one submitted it at scale is not visible from the published results.
+- **All 2025 winners are open-source and reproducible**, including the 1st-place Qwen3+TTT+TRM notebook from NVARC. This opens a Phase-4+N path of "reproduce a 2025 winner first, then improve" that we did not have at the time of the original Phase 3 plan.
+- **Code execution remains a force multiplier on AGI-1, but is unproven on AGI-2.** Every approach with measurable >40% on AGI-1 either runs LLM-generated code or runs a hand-built program (DSL). For AGI-2 the published top scores are TTT/custom-LM, not code-execution-based.
+- **The grand prize threshold (85% on private eval) is unclaimed.** Even the 2025 1st place (24%) is far below it. The competition is meaningfully open.
 - **No baseline number from us yet.** Phase 2 produced the harness but not the recorded score. The ADR must handle this.
 
 ## Closed-source / unreproducible references
@@ -151,4 +161,4 @@ This survey backs the ADR in `docs/decision_log.md`. It is deliberately not exha
 These are cited so we know they exist, but we can't reproduce them as-is:
 - OpenAI o3 demonstration on ARC-AGI-1 (no released code).
 - Anthropic's internal eval numbers (no released ARC-specific solution).
-- ARC Prize 2025/2026 Kaggle private submissions still under embargo at survey time.
+- ARC Prize 2026 private Kaggle submissions still under embargo at survey time. (The 2025 results, by contrast, are public — see Headline Context above.)

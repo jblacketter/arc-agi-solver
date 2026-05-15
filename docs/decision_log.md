@@ -6,6 +6,30 @@ This log tracks important decisions made during the project.
 
 ---
 
+## 2026-05-15: Amend Phase 4 ADR gate — gate impl start, not plan approval
+
+**Decision:** Amend the previous Phase 4 ADR. The gating clause "Phase 4 plan cannot be approved without that entry" is replaced with: **"Phase 4 implementation start cannot begin without that entry. The Phase 4 *plan* may be reviewed and approved on its design merits; the impl cycle's first deliverable is to run `just eval --limit 30 --max-cost-usd 10 --agent baseline_llm --split evaluation` and append the result entry to this decision log, before any new code is written under `src/arcsolver/agi2/agents/codegen_llm.py` or `src/arcsolver/agi2/sandbox.py`."**
+
+**Context:** The earlier ADR's gate at plan-approval time is in tension with how plan vs impl review actually work in this project: a plan is design+rationale, an impl is the code+tests+evidence. Gating the design review on a measurement makes the workflow brittle (you can't even discuss the design until you spend money). Codex's Phase 4 plan-review correctly flagged that the original wording could not be overridden by reviewer interpretation — so this entry makes the change explicit instead.
+
+**Alternatives Considered:**
+- Keep the original gate: would force a baseline run before Phase 4 design discussion, which is exactly the workflow brittleness above.
+- Drop the gate entirely: would lose the "must have a real number before we ship code" property, which is the whole point of the gate.
+- Move the gate to impl start (chosen): preserves the property, enables design review without forcing premature spend.
+
+**Rationale:** A plan that hand-waves "we'll measure later" is the failure mode the gate exists to prevent. Tying the gate to impl-start, not plan-approval, prevents that without blocking design conversations.
+
+**Decided By:** Human (jackblacketter) authorized "Start Phase 4 planning despite the gating (zero cost)" in this session; lead (claude) formalizing as an ADR amendment; reviewer (codex) requested the formal amendment in Phase 4 plan-review Round 1.
+
+**Phase:** agi2-solver (amends the previous agi2-approach ADR)
+
+**Follow-ups:**
+- Phase 4 plan can be approved on design merits per this amended gate.
+- Phase 4 impl Round 1 must start by running the baseline and appending its result to this log. If the human waives the live run a second time, an explicit waiver entry is appended (same precedent as the existing "Defer the live ARC-AGI-2 baseline run" entry below).
+- The original ADR's text is preserved for audit (not retroactively edited); this amendment supersedes it.
+
+---
+
 ## 2026-05-15: Phase 4 will implement LLM-driven Python program induction (Greenblatt-style, cost-tuned)
 
 **Decision:** Phase 4 (`agi2-solver`) implements a new agent family alongside `baseline_llm`: an LLM-driven **program-induction agent** that asks Claude to write a Python `solve(grid) -> grid` function for each task, executes the candidate against the training pairs in a sandboxed subprocess, retries on failure up to a sample budget, and returns the candidate's output on the test inputs as its attempt. The Phase 4 v0 is **deliberately cost-tuned**: small default sample count (e.g. 3 attempts/task), strict `--max-cost-usd` ceiling reused from Phase 2, and an explicit per-task wall-clock timeout on the sandboxed executor. Later iterations can scale samples up the cost curve, but v0 must produce a measurable score within the same single-digit-dollar budget as Phase 2's planned baseline.

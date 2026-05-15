@@ -1,0 +1,18 @@
+{
+  "state": "approved",
+  "ready_for": null,
+  "round": 2,
+  "phase": "agi2-baseline",
+  "type": "impl",
+  "lead": "claude",
+  "reviewer": "codex",
+  "date": "2026-05-15",
+  "baseline": {
+    "sha": "1de6db9f1b6012ec9e162597e79069998d5d9ff7",
+    "dirty_paths": [
+      "?? docs/phases/agi2-baseline.md"
+    ],
+    "captured_at": "2026-05-15T06:23:46.763992+00:00",
+    "source": "copied-from-plan"
+  }
+}

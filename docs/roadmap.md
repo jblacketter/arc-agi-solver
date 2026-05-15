@@ -19,7 +19,7 @@ Build an open-source agent/solver that competes in the ARC Prize on Kaggle. The 
   - Smoke test loads one AGI-2 task and one AGI-3 env (`arc.make("ls20")`) without error
 
 ### Phase 2: agi2-baseline
-- **Status:** Not Started
+- **Status:** Complete (2026-05-15, harness only — recorded baseline number deferred; see decision_log.md)
 - **Description:** Build a scoring harness for ARC-AGI-2 and ship a minimal Claude-based baseline agent so we have a reproducible baseline score on the public eval split.
 - **Key Deliverables:**
   - `arcsolver.agi2.scoring` module that reads tasks, runs an agent, and reports per-task + aggregate accuracy

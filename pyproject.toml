@@ -1,0 +1,44 @@
+[project]
+name = "arcsolver"
+version = "0.0.1"
+description = "Open-source solver for the ARC Prize (ARC-AGI-2 and ARC-AGI-3 benchmarks)."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Jack Blacketter" }]
+dependencies = [
+    "arc-agi>=0.9.8",
+    "anthropic",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/arcsolver"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/arcsolver"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

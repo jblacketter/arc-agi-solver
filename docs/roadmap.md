@@ -35,7 +35,7 @@ Build an open-source agent/solver that competes in the ARC Prize on Kaggle. The 
 
 ### Phase 4: agi2-solver
 - **Status:** Not Started
-- **Description:** Implement and tune the chosen AGI-2 solver against the public eval split.
+- **Description:** Implement an LLM-driven Python program-induction agent (Greenblatt-style, cost-tuned) and tune it against the public eval split. See `docs/decision_log.md` ADR "Phase 4 will implement LLM-driven Python program induction".
 - **Key Deliverables:**
   - Solver implementation under `arcsolver.agi2.solvers.<approach>`
   - Eval report showing score improvement over the Phase 2 baseline

@@ -1,0 +1,18 @@
+{
+  "state": "approved",
+  "ready_for": null,
+  "round": 2,
+  "phase": "agi2-approach",
+  "type": "plan",
+  "lead": "claude",
+  "reviewer": "codex",
+  "date": "2026-05-15",
+  "baseline": {
+    "sha": "3926147607cd87b1e7d6ab863719e4369236a672",
+    "dirty_paths": [
+      "?? docs/phases/agi2-approach.md"
+    ],
+    "captured_at": "2026-05-15T06:57:03.959008+00:00",
+    "source": "plan-init"
+  }
+}

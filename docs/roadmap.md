@@ -27,7 +27,7 @@ Build an open-source agent/solver that competes in the ARC Prize on Kaggle. The 
   - Recorded baseline score in `docs/decision_log.md`
 
 ### Phase 3: agi2-approach
-- **Status:** Not Started
+- **Status:** Complete (2026-05-15)
 - **Description:** Survey ARC-AGI-2 prior art (program synthesis, DSL search, test-time training, LLM + search, hybrid). Pick a direction with explicit tradeoffs.
 - **Key Deliverables:**
   - Literature/repo survey notes under `docs/research/agi2_survey.md`

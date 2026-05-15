@@ -10,7 +10,7 @@ Build an open-source agent/solver that competes in the ARC Prize on Kaggle. The 
 ## Phases
 
 ### Phase 1: foundations
-- **Status:** Not Started
+- **Status:** Complete (2026-05-15)
 - **Description:** Project scaffolding: Python env, package layout, license, `arc-agi` SDK installed, ARC-AGI-2 dataset downloaded, smoke test proves both AGI-2 task loading and AGI-3 env creation work end-to-end.
 - **Key Deliverables:**
   - `pyproject.toml` (uv-managed), `src/arcsolver/` package skeleton, `tests/` with smoke test
